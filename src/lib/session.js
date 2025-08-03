@@ -21,6 +21,7 @@ export async function decrypt(session = '') {
         return payload
     } catch (error) {
         console.log('Failed to verify session')
+        return null
     }
 }
 
@@ -31,11 +32,13 @@ export async function createSession(userId) {
 
     cookieStore.set('session', session, {
         httpOnly: true,
-        secure: true,
+        secure: process.env.NODE_ENV === 'production',
         expires: expiresAt,
         sameSite: 'lax',
         path: '/',
     })
+
+    console.log('Session created successfully:', session)
 }
 
 export async function updateSession() {
@@ -47,20 +50,21 @@ export async function updateSession() {
     }
 
     const expires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+    const newSession = await encrypt({ ...payload, expiresAt: expires })
 
-    const cookieStore = await cookies()
-    cookieStore.set('session', session, {
+    const cookieStore = await cookies();
+    cookieStore.set('session', newSession, {
         httpOnly: true,
-        secure: true,
+        secure: process.env.NODE_ENV === 'production',
         expires: expires,
         sameSite: 'lax',
         path: '/',
-    })
+    });
 }
 
 export async function deleteSession() {
-    const cookieStore = await cookies()
-    cookieStore.delete('session')
+    const cookieStore = await cookies();
+    cookieStore.delete('session');
 }
 
 export async function getSession() {

@@ -3,10 +3,11 @@ import clientPromise from './mongo';
 
 export async function getBlogs() {
     try {
-        let client = await clientPromise;
+        const client = await clientPromise;
         const db = client.db('portfolio-blog-db');
         const blogsCollection = db.collection('blogs');
         const blogs = await blogsCollection.find().sort({ createdAt: -1 }).toArray();
+
         return blogs.map(blog => ({
             ...blog,
             _id: blog._id.toString(),
@@ -15,8 +16,6 @@ export async function getBlogs() {
     } catch (error) {
         console.error('Error fetching blogs:', error);
         throw new Error('Failed to fetch blogs');
-    } finally {
-        await client.close();
     }
 }
 
@@ -27,7 +26,7 @@ export async function getBlog(id) {
         const blogsCollection = db.collection('blogs');
         const blog = await blogsCollection.findOne({ _id: new ObjectId(id) });
         if (!blog) {
-            throw new Error('Blog not found');
+            return null;
         }
         return {
             ...blog,
@@ -42,6 +41,26 @@ export async function getBlog(id) {
     }
 }
 
+export async function getBlogBySlug(slug) {
+    try {
+        let client = await clientPromise;
+        const db = client.db('portfolio-blog-db');
+        const blogsCollection = db.collection('blogs');
+        const blog = await blogsCollection.findOne({ slug });
+        if (!blog) {
+            return null;
+        }
+        return {
+            ...blog,
+            _id: blog._id.toString(),
+            createdAt: blog.createdAt.toISOString(),
+        };
+    } catch (error) {
+        console.error('Error fetching blog by slug:', error);
+        throw new Error('Failed to fetch blog by slug');
+    }
+}
+
 function formatSlug(title) {
     return title.toLowerCase()
         .replace(/ /g, '-')
@@ -52,13 +71,26 @@ function formatSlug(title) {
 export async function createBlog(blogData) {
     try {
         let client = await clientPromise;
+        const slug = formatSlug(blogData.title);
+        const existingBlog = await getBlogBySlug(slug);
+        if (existingBlog) {
+            let counter = 1;
+            let newSlug = `${slug}-${counter}`;
+            while (await getBlogBySlug(newSlug)) {
+                counter++;
+                newSlug = `${slug}-${counter}`;
+            }
+            blogData.slug = newSlug;
+        }
         const db = client.db('portfolio-blog-db');
         const blogsCollection = db.collection('blogs');
-        const result = blogsCollection.insertOne(blogData);
+        const result = blogsCollection.insertOne({
+            ...blogData,
+            slug: blogData.slug || formatSlug(blogData.title),
+        });
         return {
             ...result,
             _id: result.insertId,
-            slug: formatSlug(blogData.title),
             createdAt: blogData.createdAt.toISOString(),
         };
     } catch (error) {
@@ -85,5 +117,21 @@ export async function updateBlog(id, blogData) {
         throw new Error('Failed to update blog');
     } finally {
         await client.close();
+    }
+}
+
+export async function deleteBlog(id) {
+    try {
+        let client = await clientPromise;
+        const db = client.db('portfolio-blog-db');
+        const blogsCollection = db.collection('blogs');
+        const result = await blogsCollection.deleteOne({ _id: new ObjectId(id) });
+        if (result.deletedCount === 0) {
+            throw new Error('Blog not found');
+        }
+        return result;
+    } catch (error) {
+        console.error('Error deleting blog:', error);
+        throw new Error('Failed to delete blog');
     }
 }

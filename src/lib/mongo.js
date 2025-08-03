@@ -5,18 +5,24 @@ if (!process.env.MONGODB_URI) {
 }
 
 const uri = process.env.MONGODB_URI;
+const options = {};
 
 let client;
+let clientPromise;
 
 if (process.env.NODE_ENV === 'development') {
     let globalWithMongo = global;
 
-    if (!globalWithMongo._mongoClient) {
-        globalWithMongo._mongoClient = new MongoClient(uri);
+    if (!globalWithMongo._mongoClientPromise) {
+        client = new MongoClient(uri, options);
+        globalWithMongo._mongoClientPromise = client.connect();
     }
-    client = globalWithMongo._mongoClient;
+    clientPromise = globalWithMongo._mongoClientPromise;
 } else {
-    client = new MongoClient(uri);
+    client = new MongoClient(uri, options);
+    clientPromise = client.connect();
 }
 
-export default client;
+// Export a module-scoped MongoClient promise. By doing this in a
+// separate module, the client can be shared across functions.
+export default clientPromise;

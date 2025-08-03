@@ -1,39 +1,66 @@
-import { getSession } from '@/lib/session';
-import { redirect } from 'next/navigation';
-import { createBlog } from '@/lib/blog';
+'use client';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 
 export default function CreateBlogPage() {
-    async function handleCreateBlog(formData) {
-        const title = formData.get('title');
-        const content = formData.get('content');
+    const [content, setContent] = useState('');
+    const textareaRef = useRef(null);
 
-        if (!title || !content) {
-            throw new Error('Title and content are required');
+    const toggleBold = useCallback((textarea) => {
+        const start = textarea.selectionStart;
+        const end = textarea.selectionEnd;
+        const selectedText = textarea.value.substring(start, end);
+
+        if (selectedText === '') return;
+
+        const beforeText = textarea.value.substring(0, start);
+        const afterText = textarea.value.substring(end);
+
+        const boldStart = '<b>';
+        const boldEnd = '</b>';
+
+        const isBold = beforeText.endsWith(boldStart) && afterText.startsWith(boldEnd);
+
+        let newText;
+        let newCursorStart;
+        let newCursorEnd;
+
+        if (isBold) {
+            const newBeforeText = beforeText.slice(0, -boldStart.length);
+            const newAfterText = afterText.slice(boldEnd.length);
+            newText = newBeforeText + selectedText + newAfterText;
+            newCursorStart = start - boldStart.length;
+            newCursorEnd = end - boldStart.length;
+        } else {
+            newText = beforeText + boldStart + selectedText + boldEnd + afterText;
+            newCursorStart = start + boldStart.length;
+            newCursorEnd = end + boldStart.length;
         }
 
-        const blogData = {
-            title,
-            content,
-            excerpt: content.slice(0, 100),
-            createdAt: new Date(),
-            authorId: getSession().userId
+        setContent(newText);
+
+        setTimeout(() => {
+            textarea.selectionStart = newCursorStart;
+            textarea.selectionEnd = newCursorEnd;
+            textarea.focus();
+        }, 0);
+    }, []);
+
+    const handleKeyDown = useCallback((event) => {
+        if (event.ctrlKey && event.key === 'b' && event.target.tagName === 'TEXTAREA') {
+            event.preventDefault();
+            toggleBold(event.target);
+        }
+    }, [toggleBold]);
+
+    useEffect(() => {
+        document.addEventListener('keydown', handleKeyDown);
+        return () => {
+            document.removeEventListener('keydown', handleKeyDown);
         };
-        try {
-            const result = await createBlog(blogData);
-            return result;
-        } catch (error) {
-            console.error('Error creating blog:', error);
-            throw new Error('Failed to create blog');
-        }
-    }
-
-    if (!getSession() || !getSession().userId) {
-        redirect('/login');
-    }
-
+    }, [handleKeyDown]);
 
     return (
-        <Form action={handleCreateBlog} method="POST" className="max-w-2xl mx-auto p-8">
+        <form action="/api/blog/create" method="POST" className="max-w-2xl mx-auto p-8">
             <h1 className="text-2xl font-bold mb-4">Create a Blog Post</h1>
             <div className="mb-4">
                 <label htmlFor="title" className="block text-sm font-medium mb-2">Title</label>
@@ -48,8 +75,11 @@ export default function CreateBlogPage() {
             <div className="mb-4">
                 <label htmlFor="content" className="block text-sm font-medium mb-2">Content</label>
                 <textarea
+                    ref={textareaRef}
                     name="content"
                     id="content"
+                    value={content}
+                    onChange={(e) => setContent(e.target.value)}
                     required
                     rows="10"
                     className="w-full p-2 border border-gray-300 rounded"
@@ -61,6 +91,6 @@ export default function CreateBlogPage() {
             >
                 Create Blog Post
             </button>
-        </Form>
-    )
+        </form>
+    );
 }

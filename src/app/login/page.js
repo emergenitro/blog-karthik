@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Form from 'next/form';
-import { getSession } from '@/lib/session';
+import { useRouter } from 'next/navigation';
 
 export default function Login() {
     const [formData, setFormData] = useState({
@@ -11,10 +11,7 @@ export default function Login() {
     });
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
-
-    if (getSession() && getSession().userId) {
-        window.location.href = '/';
-    }
+    const router = useRouter();
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -30,10 +27,13 @@ export default function Login() {
             });
 
             if (!response.ok) {
-                throw new Error('Login failed');
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Login failed');
             }
 
             const data = await response.json();
+
+            window.location.href = '/';
         } catch (error) {
             setError(error.message);
         } finally {
