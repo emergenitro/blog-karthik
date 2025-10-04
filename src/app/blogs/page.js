@@ -10,24 +10,32 @@ function BlogsContent() {
     const [isAnimating, setIsAnimating] = useState(false);
     const searchParams = useSearchParams();
     const [opacity, setOpacity] = useState(0);
+    const [blogsLoaded, setBlogsLoaded] = useState(false);
 
     useEffect(() => {
         fetch('/api/blogs')
             .then(res => res.json())
-            .then(data => setBlogs(data))
+            .then(data => {
+                setBlogs(data);
+                setBlogsLoaded(true);
+            })
             .catch(console.error);
 
         fetch('/api/auth/check')
             .then(res => res.json())
             .then(data => setIsLoggedIn(data.isLoggedIn))
             .catch(() => setIsLoggedIn(false));
+    }, []);
 
-        if (searchParams.get('from') === 'home') {
-            setTimeout(() => setIsAnimating(true), 600);
-        } else {
-            setOpacity(1);
+    useEffect(() => {
+        if (blogsLoaded) {
+            if (searchParams.get('from') === 'home') {
+                setTimeout(() => setIsAnimating(true), 100);
+            } else {
+                setOpacity(1);
+            }
         }
-    }, [searchParams]);
+    }, [blogsLoaded, searchParams]);
 
     return (
         <div className={`min-h-screen flex items-center justify-center p-8 transition-all duration-1000 opacity-${opacity} ${isAnimating ? 'opacity-100 scale-100' : ''
