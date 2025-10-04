@@ -1,33 +1,50 @@
-import { getBlogs } from '@/lib/blog';
+'use client';
 
-export default async function BlogsPage() {
-  const blogs = await getBlogs() || [];
-  console.log('Fetched blogs:', blogs);
+import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import Link from 'next/link';
+
+export default function HomePage() {
+  const router = useRouter();
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    fetch('/api/auth/check')
+      .then(res => res.json())
+      .then(data => setIsLoggedIn(data.isLoggedIn))
+      .catch(() => setIsLoggedIn(false));
+  }, []);
+
+  const handleEnter = (e) => {
+    if (e.target.tagName === 'A' || e.target.closest('a')) return;
+    setIsTransitioning(true);
+    setTimeout(() => {
+      router.push('/blogs?from=home');
+    }, 800);
+  };
 
   return (
-    <div className="min-h-screen py-16">
-      <div className="w-[80%] mx-auto">
-        <div className="blog-list-container space-y-6 pt-16">
-          {blogs.length === 0 ? (
-            <div className="bg-white rounded-lg p-6">
-              <p className="text-gray-600">No posts yet.</p>
-            </div>
-          ) : (
-            blogs.map((blog) => (
-              <div key={blog._id} className="blog-card group border border-gray-200 rounded-md p-4 shadow-sm hover:shadow-md hover:border-gray-300 transition-all duration-200">
-                <a href={`/${blog.slug}`} className="block">
-                  <h2 className="text-xl font-medium text-gray-900 group-hover:text-blue-600 transition-colors mb-2">
-                    {blog.title}
-                  </h2>
-                  <p className="text-gray-600 leading-relaxed">
-                    {blog.excerpt}
-                  </p>
-                </a>
-              </div>
-            ))
-          )}
-        </div>
-      </div>
+    <div
+      className={`min-h-screen flex flex-col items-center justify-center cursor-pointer transition-all duration-1000 ${isTransitioning ? 'opacity-0 scale-95' : 'opacity-100 scale-100'
+        }`}
+      onClick={handleEnter}
+    >
+      {isLoggedIn && (
+        <Link
+          href="/admin"
+          className="absolute top-8 right-8 px-4 py-2 border-2 border-dashed border-gray-600 hover:border-gray-400 transition-all duration-300 text-sm cursor-pointer"
+          onClick={(e) => e.stopPropagation()}
+        >
+          admin
+        </Link>
+      )}
+      <h1 className="text-4xl font-bold text-center">
+        the karthik blog.
+      </h1>
+      <p className="mt-4 text-gray-500 text-sm animate-pulse">
+        click anywhere to enter
+      </p>
     </div>
   );
 }

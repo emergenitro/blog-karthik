@@ -1,5 +1,5 @@
 import { getBlogs, deleteBlog } from '@/lib/blog';
-
+import Link from 'next/link';
 
 export default async function AdminPage() {
     const blogs = await getBlogs() || [];
@@ -12,34 +12,61 @@ export default async function AdminPage() {
     }
 
     return (
-        <div>
-            <h1>Admin Dashboard</h1>
-            <h2>Blog Posts</h2>
-            <ul>
-                {blogs.map(blog => (
-                    <li key={blog._id} className="mb-4">
-                        <h3 className="text-lg font-semibold">{blog.title}</h3>
-                        <p>{blog.content.substring(0, 100)}...</p>
-                        <div className="mt-2">
-                            <a href={`/${blog.slug}`} className="text-blue-600 hover:underline">View</a>
-                            <form action={handleDelete}>
-                                <input type="hidden" name="id" value={blog._id} />
-                                <button
-                                    type="submit"
-                                    className="ml-4 text-red-600 hover:underline"
+        <div className="min-h-screen flex items-center justify-center p-8">
+            <div className="max-w-3xl w-full">
+                <h1 className="text-5xl font-bold mb-16 text-center">admin.</h1>
+
+                <div className="mb-12 flex justify-center">
+                    <Link
+                        href="/create-blog"
+                        className="px-6 py-3 border-2 border-dashed border-gray-600 hover:border-gray-400 transition-all duration-300 hover:scale-105"
+                    >
+                        + create new post
+                    </Link>
+                </div>
+
+                <div className="space-y-8">
+                    {blogs.map(blog => (
+                        <div
+                            key={blog._id}
+                            className="py-6 border-b border-gray-800 hover:border-gray-600 transition-all duration-300"
+                        >
+                            <div className="flex items-baseline justify-between gap-4">
+                                <h2 className="text-2xl font-semibold">
+                                    {blog.title}
+                                </h2>
+                                <time className="text-sm text-gray-500 whitespace-nowrap">
+                                    {new Date(blog.createdAt).toLocaleDateString('en-US', {
+                                        year: 'numeric',
+                                        month: 'short',
+                                        day: 'numeric'
+                                    })}
+                                </time>
+                            </div>
+                            {blog.description && (
+                                <p className="text-gray-400 mt-2 text-sm">{blog.description}</p>
+                            )}
+                            <div className="mt-4 flex gap-4 text-sm">
+                                <Link
+                                    href={`/blogs/${blog.slug}`}
+                                    className="text-gray-300 hover:text-white transition-colors duration-300"
                                 >
-                                    Delete
-                                </button>
-                            </form>
+                                    view
+                                </Link>
+                                <form action={handleDelete} className="inline">
+                                    <input type="hidden" name="id" value={blog._id} />
+                                    <button
+                                        type="submit"
+                                        className="text-gray-500 hover:text-red-400 transition-colors duration-300"
+                                    >
+                                        delete
+                                    </button>
+                                </form>
+                            </div>
                         </div>
-                    </li>
-                ))}
-            </ul>
-            <div className="mt-6">
-                <a href="/create-blog" className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors">
-                    Create New Blog Post
-                </a>
+                    ))}
+                </div>
             </div>
-        </div >
+        </div>
     );
 }

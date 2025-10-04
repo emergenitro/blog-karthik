@@ -8,7 +8,8 @@ export async function middleware(request) {
         '/create-blog',
         '/edit-blog',
         '/delete-blog',
-        '/dashboard'
+        '/dashboard',
+        '/admin'
     ];
 
     const isProtectedRoute = protectedRoutes.some(route =>
