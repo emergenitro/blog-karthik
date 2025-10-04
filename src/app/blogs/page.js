@@ -1,10 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 
-export default function BlogsPage() {
+function BlogsContent() {
     const [blogs, setBlogs] = useState([]);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [isAnimating, setIsAnimating] = useState(false);
@@ -85,5 +85,13 @@ export default function BlogsPage() {
                 </div>
             </div>
         </div>
+    );
+}
+
+export default function BlogsPage() {
+    return (
+        <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
+            <BlogsContent />
+        </Suspense>
     );
 }
