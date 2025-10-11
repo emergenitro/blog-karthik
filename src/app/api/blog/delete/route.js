@@ -1,12 +1,25 @@
 import { deleteBlog } from '@/lib/blog';
+import { getSession } from '@/lib/session';
+import { NextResponse } from 'next/server';
 
 export async function POST(request) {
     try {
-        const { id } = await request.json();
+        console.log('Received delete request');
+        const formData = await request.formData();
+
+        const id = formData.get('id');
 
         if (!id) {
             return new Response(JSON.stringify({ error: 'Blog id is required' }), {
                 status: 400,
+                headers: { 'Content-Type': 'application/json' },
+            });
+        }
+
+        const session = await getSession();
+        if (!session?.userId) {
+            return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+                status: 401,
                 headers: { 'Content-Type': 'application/json' },
             });
         }

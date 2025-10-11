@@ -1,14 +1,32 @@
-import { getBlogs, deleteBlog } from '@/lib/blog';
+'use client';
 import Link from 'next/link';
+import { useState, useEffect } from 'react';
 
-export default async function AdminPage() {
-    const blogs = await getBlogs() || [];
-    console.log('Fetched blogs for admin:', blogs);
+export default function AdminPage() {
+    const [blogs, setBlogs] = useState([]);
+    useEffect(() => {
+        fetch('/api/blogs')
+            .then(res => res.json())
+            .then(data => {
+                setBlogs(data);
+            })
+            .catch(console.error);
+    }, []);
 
     async function handleDelete(formData) {
-        'use server';
-        const id = formData.get('id');
-        await deleteBlog(id);
+        console.log('Deleting blog with ID:', formData);
+        fetch('/api/blog/delete', {
+            method: 'POST',
+            body: formData
+        }).then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    setBlogs(blogs.filter(blog => blog._id !== formData.get('id')));
+                } else {
+                    console.error('Failed to delete blog:', data.message);
+                }
+            })
+            .catch(console.error);
     }
 
     return (
