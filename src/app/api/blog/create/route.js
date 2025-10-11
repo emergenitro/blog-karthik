@@ -23,9 +23,14 @@ export async function POST(request) {
             );
         }
 
+        const processedContent = content.replace(
+            /\{([^|]+)\|([^}]+)\}/g,
+            '<span class="tooltip-wrapper"><span class="tooltip-text">$1</span><span class="tooltip-content">$2</span></span>'
+        );
+
         const blogData = {
             title,
-            content,
+            content: processedContent,
             excerpt: content.slice(0, 100),
             createdAt: new Date(),
             authorId: session.userId

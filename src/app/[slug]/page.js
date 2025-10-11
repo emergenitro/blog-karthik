@@ -20,66 +20,6 @@ export default function BlogPage({ params, searchParams }) {
             });
     }, [slug]);
 
-    useEffect(() => {
-        if (!blog) return;
-
-        const contentDiv = document.querySelector('.blog-content');
-        if (!contentDiv) return;
-
-        const processTooltips = (element) => {
-            const walker = document.createTreeWalker(
-                element,
-                NodeFilter.SHOW_TEXT,
-                null,
-                false
-            );
-
-            const nodesToReplace = [];
-            let node;
-
-            while (node = walker.nextNode()) {
-                const text = node.textContent;
-                if (text.includes('{') && text.includes('|') && text.includes('}')) {
-                    nodesToReplace.push(node);
-                }
-            }
-
-            nodesToReplace.forEach(node => {
-                const text = node.textContent;
-                const regex = /\{([^|]+)\|([^}]+)\}/g;
-                const parts = [];
-                let lastIndex = 0;
-                let match;
-
-                while ((match = regex.exec(text)) !== null) {
-                    if (match.index > lastIndex) {
-                        parts.push(document.createTextNode(text.slice(lastIndex, match.index)));
-                    }
-
-                    const span = document.createElement('span');
-                    span.className = 'tooltip-wrapper';
-                    span.innerHTML = `
-                        <span class="tooltip-text">${match[1]}</span>
-                        <span class="tooltip-content">${match[2]}</span>
-                    `;
-                    parts.push(span);
-
-                    lastIndex = regex.lastIndex;
-                }
-
-                if (lastIndex < text.length) {
-                    parts.push(document.createTextNode(text.slice(lastIndex)));
-                }
-
-                const fragment = document.createDocumentFragment();
-                parts.forEach(part => fragment.appendChild(part));
-                node.parentNode.replaceChild(fragment, node);
-            });
-        };
-
-        processTooltips(contentDiv);
-    }, [blog]);
-
     if (loading) {
         return (
             <div className="min-h-screen flex items-center justify-center p-8">
