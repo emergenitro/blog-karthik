@@ -51,7 +51,7 @@ export async function POST(request) {
                             month: 'long',
                             day: 'numeric'
                         }),
-                        blog_url: `https://blog.karthik.lol/blog/${result.slug || ''}`
+                        blog_url: `https://blog.karthik.lol/${result.slug || ''}`
                     })
                 });
             } catch (webhookError) {
