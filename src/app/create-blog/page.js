@@ -77,6 +77,64 @@ export default function CreateBlogPage() {
         }, 0);
     }, []);
 
+    const insertLink = useCallback((textarea) => {
+        const start = textarea.selectionStart;
+        const end = textarea.selectionEnd;
+        const selectedText = textarea.value.substring(start, end);
+        const beforeText = textarea.value.substring(0, start);
+        const afterText = textarea.value.substring(end);
+
+        const linkText = selectedText || 'link text';
+        const linkUrl = 'https://example.com';
+        const linkMarkdown = `[${linkText}](${linkUrl})`;
+
+        const newText = beforeText + linkMarkdown + afterText;
+        setContent(newText);
+
+        setTimeout(() => {
+            if (selectedText) {
+                // If text was selected, place cursor after the opening (
+                const urlStart = start + linkText.length + 3;
+                textarea.selectionStart = urlStart;
+                textarea.selectionEnd = urlStart + linkUrl.length;
+            } else {
+                // If no text selected, select the default link text
+                textarea.selectionStart = start + 1;
+                textarea.selectionEnd = start + 1 + linkText.length;
+            }
+            textarea.focus();
+        }, 0);
+    }, []);
+
+    const insertTooltip = useCallback((textarea) => {
+        const start = textarea.selectionStart;
+        const end = textarea.selectionEnd;
+        const selectedText = textarea.value.substring(start, end);
+        const beforeText = textarea.value.substring(0, start);
+        const afterText = textarea.value.substring(end);
+
+        const text = selectedText || 'hover text';
+        const tooltip = 'tooltip content';
+        const tooltipSyntax = `{${text}|${tooltip}}`;
+
+        const newText = beforeText + tooltipSyntax + afterText;
+        setContent(newText);
+
+        setTimeout(() => {
+            if (selectedText) {
+                // If text was selected, place cursor at the pipe to enter tooltip
+                const tooltipStart = start + text.length + 2;
+                textarea.selectionStart = tooltipStart;
+                textarea.selectionEnd = tooltipStart + tooltip.length;
+            } else {
+                // If no text selected, select the default hover text
+                textarea.selectionStart = start + 1;
+                textarea.selectionEnd = start + 1 + text.length;
+            }
+            textarea.focus();
+        }, 0);
+    }, []);
+
     const handleKeyDown = useCallback((event) => {
         if (event.ctrlKey && event.key === 'b' && event.target.tagName === 'TEXTAREA') {
             event.preventDefault();
@@ -86,7 +144,15 @@ export default function CreateBlogPage() {
             event.preventDefault();
             toggleItalic(event.target);
         }
-    }, [toggleBold, toggleItalic]);
+        if (event.ctrlKey && event.key === 'k' && event.target.tagName === 'TEXTAREA') {
+            event.preventDefault();
+            insertLink(event.target);
+        }
+        if (event.ctrlKey && event.key === 'm' && event.target.tagName === 'TEXTAREA') {
+            event.preventDefault();
+            insertTooltip(event.target);
+        }
+    }, [toggleBold, toggleItalic, insertLink, insertTooltip]);
 
     useEffect(() => {
         document.addEventListener('keydown', handleKeyDown);
@@ -114,7 +180,7 @@ export default function CreateBlogPage() {
                     </div>
 
                     <div>
-                        <label htmlFor="content" className="block text-sm text-gray-400 mb-2">content <span className="text-gray-600">(ctrl+b for bold, ctrl+i for italics)</span></label>
+                        <label htmlFor="content" className="block text-sm text-gray-400 mb-2">content <span className="text-gray-600">(ctrl+b bold, ctrl+i italics, ctrl+k link, ctrl+m tooltip)</span></label>
                         <textarea
                             ref={textareaRef}
                             name="content"
