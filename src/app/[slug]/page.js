@@ -1,5 +1,4 @@
 'use client';
-import { getBlogBySlug } from '@/lib/blog';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
@@ -9,10 +8,16 @@ export default function BlogPage({ params, searchParams }) {
     const { slug } = params;
 
     useEffect(() => {
-        getBlogBySlug(slug).then(data => {
-            setBlog(data);
-            setLoading(false);
-        });
+        fetch(`/api/blog/${slug}`)
+            .then(res => res.json())
+            .then(data => {
+                setBlog(data);
+                setLoading(false);
+            })
+            .catch(err => {
+                console.error(err);
+                setLoading(false);
+            });
     }, [slug]);
 
     useEffect(() => {
