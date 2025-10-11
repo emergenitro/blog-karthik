@@ -38,6 +38,26 @@ export async function POST(request) {
 
         const result = await createBlog(blogData);
 
+        if (process.env.SLACK_WEBHOOK_URL) {
+            try {
+                await fetch(process.env.SLACK_WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        blog_name: title,
+                        blog_excerpt: content.slice(0, 100).replace(/<[^>]*>/g, '').replace(/\{[^}]*\}/g, ''),
+                        blog_date: new Date().toLocaleDateString('en-US', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric'
+                        })
+                    })
+                });
+            } catch (webhookError) {
+                console.error('Failed to send Slack webhook:', webhookError);
+            }
+        }
+
         return NextResponse.json({
             success: true,
             message: 'Blog created successfully',

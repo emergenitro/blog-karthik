@@ -1,9 +1,11 @@
 'use client';
 import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function CreateBlogPage() {
     const [content, setContent] = useState('');
     const textareaRef = useRef(null);
+    const router = useRouter();
 
     const toggleBold = useCallback((textarea) => {
         const start = textarea.selectionStart;
@@ -93,12 +95,10 @@ export default function CreateBlogPage() {
 
         setTimeout(() => {
             if (selectedText) {
-                // If text was selected, place cursor after the opening (
                 const urlStart = start + linkText.length + 3;
                 textarea.selectionStart = urlStart;
                 textarea.selectionEnd = urlStart + linkUrl.length;
             } else {
-                // If no text selected, select the default link text
                 textarea.selectionStart = start + 1;
                 textarea.selectionEnd = start + 1 + linkText.length;
             }
@@ -159,9 +159,32 @@ export default function CreateBlogPage() {
         };
     }, [handleKeyDown]);
 
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+
+        try {
+            const response = await fetch('/api/blog/create', {
+                method: 'POST',
+                body: formData
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                router.push('/admin');
+            } else {
+                alert(data.message || 'Failed to create blog');
+            }
+        } catch (error) {
+            console.error('Error creating blog:', error);
+            alert('Failed to create blog');
+        }
+    };
+
     return (
         <div className="min-h-screen flex items-center justify-center p-8">
-            <form action="/api/blog/create" method="POST" className="max-w-3xl w-full">
+            <form onSubmit={handleSubmit} className="max-w-3xl w-full">
                 <h1 className="text-5xl font-bold mb-16 text-center">create</h1>
 
                 <div className="space-y-8">
