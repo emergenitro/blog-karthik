@@ -92,6 +92,7 @@ export async function createBlog(blogData) {
             ...result,
             _id: result.insertId,
             createdAt: blogData.createdAt.toISOString(),
+            slug: blogData.slug || formatSlug(blogData.title),
         };
     } catch (error) {
         console.error('Error creating blog:', error);

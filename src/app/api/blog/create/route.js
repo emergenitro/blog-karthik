@@ -50,7 +50,8 @@ export async function POST(request) {
                             year: 'numeric',
                             month: 'long',
                             day: 'numeric'
-                        })
+                        }),
+                        blog_url: `https://blog.karthik.lol/blog/${result.slug || ''}`
                     })
                 });
             } catch (webhookError) {
