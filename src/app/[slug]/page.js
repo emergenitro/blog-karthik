@@ -63,7 +63,7 @@ export default function BlogPage({ params, searchParams }) {
                 </header>
 
                 <div
-                    className="blog-content prose prose-invert max-w-none leading-relaxed text-gray-300"
+                    className="blog-content prose prose-invert max-w-none leading-relaxed text-gray-300 whitespace-pre-wrap"
                     dangerouslySetInnerHTML={{ __html: blog.content }}
                 />
             </article>

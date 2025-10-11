@@ -45,7 +45,7 @@ export async function POST(request) {
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         blog_name: title,
-                        blog_excerpt: content.slice(0, 100).replace(/<[^>]*>/g, '').replace(/\{[^}]*\}/g, ''),
+                        blog_excerpt: content.slice(0, 100).replace(/<[^>]*>/g, '').replace(/\{[^}]*\}/g, '') + (content.length > 100 ? '...' : ''),
                         blog_date: new Date().toLocaleDateString('en-US', {
                             year: 'numeric',
                             month: 'long',
