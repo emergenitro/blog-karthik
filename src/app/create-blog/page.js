@@ -122,12 +122,10 @@ export default function CreateBlogPage() {
 
         setTimeout(() => {
             if (selectedText) {
-                // If text was selected, place cursor at the pipe to enter tooltip
                 const tooltipStart = start + text.length + 2;
                 textarea.selectionStart = tooltipStart;
                 textarea.selectionEnd = tooltipStart + tooltip.length;
             } else {
-                // If no text selected, select the default hover text
                 textarea.selectionStart = start + 1;
                 textarea.selectionEnd = start + 1 + text.length;
             }
