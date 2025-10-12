@@ -71,6 +71,12 @@ export default function AdminPage() {
                                 >
                                     view
                                 </Link>
+                                <Link
+                                    href={`/edit-blog/${blog._id}`}
+                                    className="text-gray-300 hover:text-white transition-colors duration-300"
+                                >
+                                    edit
+                                </Link>
                                 <form action={handleDelete} className="inline">
                                     <input type="hidden" name="id" value={blog._id} />
                                     <button
