@@ -72,7 +72,7 @@ export default function AdminPage() {
                                     view
                                 </Link>
                                 <Link
-                                    href={`/edit-blog/${blog._id}`}
+                                    href={`/edit-blog/${blog.slug}`}
                                     className="text-gray-300 hover:text-white transition-colors duration-300"
                                 >
                                     edit

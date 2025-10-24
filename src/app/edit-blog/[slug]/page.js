@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useRef, use } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 
 export default function EditBlogPage() {
@@ -8,14 +8,16 @@ export default function EditBlogPage() {
     const [loading, setLoading] = useState(true);
     const textareaRef = useRef(null);
     const router = useRouter();
-    const params = useParams();
-    const blogId = params.slug;
 
     useEffect(() => {
         async function fetchBlog() {
+            const { slug } = await useParams();
             try {
-                const response = await fetch(`/api/blog?id=${blogId}`);
+                console.log('Fetching blog with ID:', slug);
+                console.log('API Endpoint:', `/api/blog/${slug}`);
+                const response = await fetch(`/api/blog/${slug}`);
                 const data = await response.json();
+                console.log(response);
                 if (data.success) {
                     setTitle(data.blog.title);
                     setContent(data.blog.content.replace(
@@ -33,7 +35,7 @@ export default function EditBlogPage() {
             }
         }
         fetchBlog();
-    }, [blogId]);
+    }, []);
 
     const toggleBold = useCallback((textarea) => {
         const start = textarea.selectionStart;
