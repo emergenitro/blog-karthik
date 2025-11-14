@@ -84,7 +84,7 @@ export async function sendMessageToAI(message, conversationHistory = []) {
         console.log(messages);
 
         const completion = await openai.chat.completions.create({
-            model: "openai/gpt-oss-20b",
+            model: "qwen/qwq-32b",
             messages: messages,
             temperature: 1,
             top_p: 1,
