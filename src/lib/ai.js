@@ -41,7 +41,6 @@ async function injectBlogContent(systemPrompt) {
     try {
         const blogs = await getBlogs();
 
-
         const blogContent = blogs.map(blog => `
 ### Blog: ${blog.title}
 **Published:** ${blog.createdAt}
@@ -85,12 +84,11 @@ export async function sendMessageToAI(message, conversationHistory = []) {
         console.log(messages);
 
         const response = await openai.chat.completions.create({
-            model: 'deepseek-ai/deepseek-v3.1-terminus',
+            model: 'meta/llama-3.2-3b-instruct',
             messages: messages,
             max_tokens: 2048,
             temperature: 1,
             top_p: 1,
-            chat_template_kwargs: { "thinking": true },
         });
 
         console.log(response);
