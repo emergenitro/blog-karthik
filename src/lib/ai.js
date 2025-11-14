@@ -83,19 +83,23 @@ export async function sendMessageToAI(message, conversationHistory = []) {
 
         console.log(messages);
 
-        const response = await openai.chat.completions.create({
-            model: 'meta/llama-3.2-3b-instruct',
+        const completion = await openai.chat.completions.create({
+            model: "openai/gpt-oss-20b",
             messages: messages,
-            max_tokens: 2048,
             temperature: 1,
             top_p: 1,
+            max_tokens: 2048,
+            stream: false
         });
 
-        console.log(response);
+        console.log(completion);
 
-        console.log('AI Response:', response.choices[0].message.content);
+        const reasoning = completion.choices[0]?.message?.reasoning_content;
+        if (reasoning) console.log('Reasoning:', reasoning);
+        
+        console.log('AI Response:', completion.choices[0]?.message?.content);
 
-        return response.choices[0].message.content;
+        return completion.choices[0]?.message?.content;
     }
     catch (error) {
         console.error('Error communicating with OpenAI:', error);
