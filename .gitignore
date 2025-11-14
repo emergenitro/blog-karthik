@@ -43,3 +43,5 @@ next-env.d.ts
 .npmrc
 .vercel
 .vercelignore
+
+me_prompt.md
