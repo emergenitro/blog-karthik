@@ -10,11 +10,14 @@ export default function HomePage() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
+    // Prefetch the blogs page for instant navigation
+    router.prefetch('/blogs?from=home');
+
     fetch('/api/auth/check')
       .then(res => res.json())
       .then(data => setIsLoggedIn(data.isLoggedIn))
       .catch(() => setIsLoggedIn(false));
-  }, []);
+  }, [router]);
 
   const handleEnter = (e) => {
     if (e.target.tagName === 'A' || e.target.closest('a')) return;
@@ -35,6 +38,7 @@ export default function HomePage() {
           href="/admin"
           className="absolute top-8 right-8 px-4 py-2 border-2 border-dashed border-gray-600 hover:border-gray-400 transition-all duration-300 text-sm cursor-pointer"
           onClick={(e) => e.stopPropagation()}
+          prefetch={true}
         >
           admin
         </Link>

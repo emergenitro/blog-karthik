@@ -1,19 +1,18 @@
 import "./globals.css";
-import { Montserrat, Poppins, Raleway } from "next/font/google";
+import { Montserrat, Poppins } from "next/font/google";
 
 const montserrat = Montserrat({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  weight: ["600", "700"],
+  display: "swap",
+  variable: "--font-montserrat",
 });
 
 const poppins = Poppins({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-});
-
-const raleway = Raleway({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800"],
+  weight: ["400", "500", "600"],
+  display: "swap",
+  variable: "--font-poppins",
 });
 
 export const metadata = {
@@ -23,8 +22,8 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className={poppins.className}>
-      <body>
+    <html lang="en" className={`${poppins.variable} ${montserrat.variable}`}>
+      <body className={poppins.className}>
         {children}
       </body>
     </html>
