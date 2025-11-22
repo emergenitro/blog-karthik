@@ -1,67 +1,20 @@
-'use client';
-
-import { useState, useEffect, Suspense } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { getBlogs } from '@/lib/blog';
 import Link from 'next/link';
+import BlogsClientWrapper from './BlogsClientWrapper';
 
-function BlogsContent() {
-    const [blogs, setBlogs] = useState([]);
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const [isAnimating, setIsAnimating] = useState(false);
-    const searchParams = useSearchParams();
-    const [opacity, setOpacity] = useState(0);
-    const [blogsLoaded, setBlogsLoaded] = useState(false);
+export const revalidate = 60; // Revalidate every 60 seconds
 
-    useEffect(() => {
-        fetch('/api/blogs')
-            .then(res => res.json())
-            .then(data => {
-                setBlogs(data);
-                setBlogsLoaded(true);
-            })
-            .catch(console.error);
+export const metadata = {
+    title: "Posts | Karthik's Blog",
+    description: "Read all blog posts from Karthik",
+};
 
-        fetch('/api/auth/check')
-            .then(res => res.json())
-            .then(data => setIsLoggedIn(data.isLoggedIn))
-            .catch(() => setIsLoggedIn(false));
-    }, []);
-
-    useEffect(() => {
-        if (blogsLoaded) {
-            if (searchParams.get('from') === 'home') {
-                setTimeout(() => setIsAnimating(true), 100);
-            } else {
-                setOpacity(1);
-            }
-        }
-    }, [blogsLoaded, searchParams]);
+export default async function BlogsPage() {
+    const blogs = await getBlogs();
 
     return (
-        <div className={`min-h-screen flex items-center justify-center p-8 transition-all duration-1000 opacity-${opacity} ${isAnimating ? 'opacity-100 scale-100' : ''
-            }`}
-            style={isAnimating ? { animation: 'popIn 0.8s ease-out' } : {}}>
-            <style jsx>{`
-                @keyframes popIn {
-                    0% {
-                        opacity: 0;
-                        transform: scale(0.8);
-                    }
-                    100% {
-                        opacity: 1;
-                        transform: scale(1);
-                    }
-                }
-            `}</style>
+        <BlogsClientWrapper>
             <div className="max-w-3xl w-full">
-                {isLoggedIn && (
-                    <Link
-                        href="/admin"
-                        className="absolute top-8 right-8 px-4 py-2 border-2 border-dashed border-gray-600 hover:border-gray-400 transition-all duration-300 text-sm"
-                    >
-                        admin
-                    </Link>
-                )}
                 <h1 className="text-5xl font-bold mb-16 text-center">posts</h1>
 
                 <div className="space-y-8">
@@ -92,14 +45,6 @@ function BlogsContent() {
                     ))}
                 </div>
             </div>
-        </div>
-    );
-}
-
-export default function BlogsPage() {
-    return (
-        <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
-            <BlogsContent />
-        </Suspense>
+        </BlogsClientWrapper>
     );
 }

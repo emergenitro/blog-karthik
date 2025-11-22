@@ -1,44 +1,40 @@
-'use client';
+import { getBlogs, getBlogBySlug } from '@/lib/blog';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { notFound } from 'next/navigation';
 
-export default function BlogPage({ params, searchParams }) {
-    const [blog, setBlog] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const { slug } = params;
+export const revalidate = 60; // Revalidate every 60 seconds
 
-    useEffect(() => {
-        fetch(`/api/blog/${slug}`)
-            .then(res => res.json())
-            .then(data => {
-                setBlog(data);
-                setLoading(false);
-            })
-            .catch(err => {
-                console.error(err);
-                setLoading(false);
-            });
-    }, [slug]);
+// Generate static params for all blog posts
+export async function generateStaticParams() {
+    const blogs = await getBlogs();
+    return blogs.map((blog) => ({
+        slug: blog.slug,
+    }));
+}
 
-    if (loading) {
-        return (
-            <div className="min-h-screen flex items-center justify-center p-8">
-                <div className="text-gray-500">loading...</div>
-            </div>
-        );
-    }
+// Generate dynamic metadata for each blog post
+export async function generateMetadata({ params }) {
+    const { slug } = await params;
+    const blog = await getBlogBySlug(slug);
 
     if (!blog) {
-        return (
-            <div className="min-h-screen flex items-center justify-center p-8">
-                <div className="text-center">
-                    <h1 className="text-3xl font-bold text-gray-500 mb-8">post not found</h1>
-                    <Link href="/blogs" className="text-gray-400 hover:text-white transition-colors duration-300">
-                        ← back to posts
-                    </Link>
-                </div>
-            </div>
-        );
+        return {
+            title: 'Post Not Found',
+        };
+    }
+
+    return {
+        title: `${blog.title} | Karthik's Blog`,
+        description: blog.description || `Read ${blog.title} on Karthik's blog`,
+    };
+}
+
+export default async function BlogPage({ params }) {
+    const { slug } = await params;
+    const blog = await getBlogBySlug(slug);
+
+    if (!blog) {
+        notFound();
     }
 
     return (
