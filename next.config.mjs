@@ -9,11 +9,6 @@ const nextConfig = {
     minimumCacheTTL: 60 * 60 * 24 * 30, // 30 days
   },
 
-  // Enable experimental optimizations
-  experimental: {
-    optimizeCss: true,
-  },
-
   // Add caching headers for static assets
   async headers() {
     return [
