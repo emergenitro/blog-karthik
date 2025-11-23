@@ -15,7 +15,7 @@ export default function TestAIPage() {
         });
 
         const data = await response.json();
-        setConversationHistory([...conversationHistory, { role: 'user', content: message }, { role: 'ai', content: data.message }]);
+        setConversationHistory([...conversationHistory, { role: 'user', content: message }, { role: 'assistant', content: data.message }]);
     }
 
     return (

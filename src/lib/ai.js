@@ -13,8 +13,8 @@ async function loadSystemPrompt() {
     }
 
     try {
-        const promptPath = path.join(process.cwd(), 'me_prompt.md');
-        let systemPrompt = await fs.readFile(promptPath, 'utf-8');
+        const response = await fetch(process.env.SYSTEM_PROMPT_URL);
+        let systemPrompt = await response.text();
 
         const currentDate = new Date().toLocaleDateString('en-US', {
             weekday: 'long',
@@ -33,6 +33,13 @@ async function loadSystemPrompt() {
         return cachedSystemPrompt;
     } catch (error) {
         console.error('Error loading system prompt:', error);
+        try {
+            const fallbackPromptPath = path.join(process.cwd(), 'me_prompt.md');
+            const fallbackPrompt = await fs.readFile(fallbackPromptPath, 'utf-8');
+            return fallbackPrompt;
+        } catch (fallbackError) {
+            console.error('Error loading fallback prompt:', fallbackError);
+        }
         return 'You are Karthik Sankar, an 18-year-old from Singapore serving National Service.';
     }
 }
@@ -84,12 +91,13 @@ export async function sendMessageToAI(message, conversationHistory = []) {
         console.log(messages);
 
         const completion = await openai.chat.completions.create({
-            model: "qwen/qwq-32b",
+            model: "deepseek-ai/deepseek-v3.1",
             messages: messages,
             temperature: 1,
             top_p: 1,
             max_tokens: 2048,
-            stream: false
+            stream: false,
+            chat_template_kwargs: {"thinking":true}
         });
 
         console.log(completion);
