@@ -21,7 +21,7 @@ export async function getBlogs() {
 
 export async function getBlog(id) {
     try {
-        let client = await clientPromise;
+        const client = await clientPromise;
         const db = client.db('portfolio-blog-db');
         const blogsCollection = db.collection('blogs');
         const blog = await blogsCollection.findOne({ _id: new ObjectId(id) });
@@ -36,8 +36,6 @@ export async function getBlog(id) {
     } catch (error) {
         console.error('Error fetching blog by ID:', error);
         throw new Error('Failed to fetch blog');
-    } finally {
-        await client.close();
     }
 }
 
@@ -102,7 +100,7 @@ export async function createBlog(blogData) {
 
 export async function updateBlog(id, blogData) {
     try {
-        let client = await clientPromise;
+        const client = await clientPromise;
         const db = client.db('portfolio-blog-db');
         const blogsCollection = db.collection('blogs');
         const result = await blogsCollection.updateOne(
@@ -116,8 +114,6 @@ export async function updateBlog(id, blogData) {
     } catch (error) {
         console.error('Error updating blog:', error);
         throw new Error('Failed to update blog');
-    } finally {
-        await client.close();
     }
 }
 
