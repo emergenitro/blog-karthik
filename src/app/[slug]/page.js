@@ -29,6 +29,10 @@ export async function generateMetadata({ params }) {
     };
 }
 
+function parseLinks(text) {
+    return text.replace(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
+}
+
 export default async function BlogPage({ params }) {
     const { slug } = await params;
     const blog = await getBlogBySlug(slug);
@@ -60,7 +64,7 @@ export default async function BlogPage({ params }) {
 
                 <div
                     className="blog-content prose prose-invert max-w-none leading-relaxed text-gray-300 whitespace-pre-wrap"
-                    dangerouslySetInnerHTML={{ __html: blog.content }}
+                    dangerouslySetInnerHTML={{ __html: parseLinks(blog.content) }}
                 />
             </article>
         </div>
