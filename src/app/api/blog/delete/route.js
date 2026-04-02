@@ -1,6 +1,6 @@
 import { deleteBlog } from '@/lib/blog';
 import { getSession } from '@/lib/session';
-import { NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 
 export async function POST(request) {
     try {
@@ -25,6 +25,7 @@ export async function POST(request) {
         }
 
         const result = await deleteBlog(id);
+        revalidatePath('/', 'layout');
 
         if (result.deletedCount === 0) {
             return new Response(JSON.stringify({ error: 'Blog not found' }), {

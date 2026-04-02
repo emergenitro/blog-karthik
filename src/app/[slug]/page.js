@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import hljs from 'highlight.js';
 
-export const revalidate = 60; // Revalidate every 60 seconds
+export const revalidate = false;
 
 // Generate static params for all blog posts
 export async function generateStaticParams() {

@@ -2,7 +2,7 @@ import { getPublicBlogs } from '@/lib/blog';
 import Link from 'next/link';
 import BlogsClientWrapper from './BlogsClientWrapper';
 
-export const revalidate = 60; // Revalidate every 60 seconds
+export const revalidate = false;
 
 export const metadata = {
     title: "Posts | Karthik's Blog",

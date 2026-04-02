@@ -1,6 +1,7 @@
 import { getSession } from '@/lib/session';
 import { createBlog } from '@/lib/blog';
 import { NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 
 export async function POST(request) {
     try {
@@ -39,6 +40,7 @@ export async function POST(request) {
         };
 
         const result = await createBlog(blogData);
+        revalidatePath('/', 'layout');
 
         if (process.env.SLACK_WEBHOOK_URL) {
             try {
