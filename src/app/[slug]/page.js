@@ -44,23 +44,33 @@ export async function generateMetadata({ params }) {
     };
 }
 
-function parseCodeBlocks(text) {
-    return text.replace(/```(\w+)?\n([\s\S]*?)```/g, (_, lang, code) => {
-        const trimmed = code.trimEnd();
-        const highlighted = lang && hljs.getLanguage(lang)
-            ? hljs.highlight(trimmed, { language: lang }).value
-            : hljs.highlightAuto(trimmed).value;
-        return `<pre class="hljs-pre"><code class="hljs">${highlighted}</code></pre>`;
-    });
+function renderCodeBlock(lang, code) {
+    const trimmed = code.trimEnd();
+    const highlighted = lang && hljs.getLanguage(lang)
+        ? hljs.highlight(trimmed, { language: lang }).value
+        : hljs.highlightAuto(trimmed).value;
+    const header = lang
+        ? `<div class="code-header"><span class="code-lang">${lang}</span></div>`
+        : `<div class="code-header"></div>`;
+    return `<div class="code-block">${header}<pre class="hljs-pre"><code class="hljs">${highlighted}</code></pre></div>`;
 }
 
 function parseLinks(text) {
     return text.replace(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
 }
 
+function parseInlineCode(text) {
+    return text.replace(/`([^`]+)`/g, '<code class="inline-code">$1</code>');
+}
+
 function processContent(text) {
     const normalized = text.replace(/\r\n/g, '\n');
-    return parseLinks(parseCodeBlocks(normalized));
+    const parts = normalized.split(/(```(?:\w+)?\n[\s\S]*?```)/g);
+    return parts.map(part => {
+        const codeMatch = part.match(/^```(\w+)?\n([\s\S]*?)```$/);
+        if (codeMatch) return renderCodeBlock(codeMatch[1], codeMatch[2]);
+        return parseInlineCode(parseLinks(part)).replace(/\n/g, '<br>');
+    }).join('');
 }
 
 export default async function BlogPage({ params }) {
@@ -93,7 +103,7 @@ export default async function BlogPage({ params }) {
                 </header>
 
                 <div
-                    className="blog-content prose prose-invert max-w-none leading-relaxed text-gray-300 whitespace-pre-wrap"
+                    className="blog-content prose prose-invert max-w-none leading-relaxed text-gray-300"
                     dangerouslySetInnerHTML={{ __html: processContent(blog.content) }}
                 />
             </article>

@@ -27,17 +27,50 @@ body {
   line-height: 1.6;
 }
 
+.code-block {
+  border: 1px solid #222;
+  border-radius: 10px;
+  overflow: hidden;
+  margin: 1.25rem 0;
+}
+
+.code-header {
+  background: #141414;
+  border-bottom: 1px solid #222;
+  padding: 9px 16px;
+  min-height: 36px;
+}
+
+.code-lang {
+  font-family: 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
+  font-size: 0.7rem;
+  color: #555;
+  text-transform: lowercase;
+  letter-spacing: 0.05em;
+}
+
 .hljs-pre {
-  border-radius: 8px;
+  margin: 0;
+  padding: 1.1rem 1.4rem;
   overflow-x: auto;
-  margin: 1.5rem 0;
-  padding: 1.25rem 1.5rem;
+  border-radius: 0;
 }
 
 .hljs-pre code {
   font-family: 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
-  font-size: 0.875rem;
+  font-size: 0.85rem;
   line-height: 1.7;
+  background: transparent !important;
+}
+
+.inline-code {
+  background: #161616;
+  border: 1px solid #2a2a2a;
+  border-radius: 4px;
+  padding: 1px 6px;
+  font-family: 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
+  font-size: 0.85em;
+  color: #ccc;
 }
 
 .blog-list-container {
