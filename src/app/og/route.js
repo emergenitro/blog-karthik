@@ -45,7 +45,7 @@ export async function GET(request) {
                         fontWeight: 400,
                     }}
                 >
-                    karthik's blog
+                    karthik&apos;s blog
                 </div>
                 <div
                     style={{
