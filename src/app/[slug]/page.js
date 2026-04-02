@@ -59,7 +59,8 @@ function parseLinks(text) {
 }
 
 function processContent(text) {
-    return parseLinks(parseCodeBlocks(text));
+    const normalized = text.replace(/\r\n/g, '\n');
+    return parseLinks(parseCodeBlocks(normalized));
 }
 
 export default async function BlogPage({ params }) {
