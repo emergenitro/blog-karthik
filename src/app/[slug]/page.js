@@ -23,9 +23,23 @@ export async function generateMetadata({ params }) {
         };
     }
 
+    const ogParams = new URLSearchParams({ title: blog.title });
+    if (blog.description) ogParams.set('description', blog.description);
+
     return {
         title: `${blog.title} | Karthik's Blog`,
         description: blog.description || `Read ${blog.title} on Karthik's blog`,
+        openGraph: {
+            title: blog.title,
+            description: blog.description || `Read ${blog.title} on Karthik's blog`,
+            images: [`/og?${ogParams.toString()}`],
+        },
+        twitter: {
+            card: 'summary_large_image',
+            title: blog.title,
+            description: blog.description || `Read ${blog.title} on Karthik's blog`,
+            images: [`/og?${ogParams.toString()}`],
+        },
     };
 }
 
