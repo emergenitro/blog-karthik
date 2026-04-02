@@ -7,6 +7,7 @@ export async function POST(request) {
         const formData = await request.formData();
         const title = formData.get('title');
         const content = formData.get('content');
+        const isPrivate = formData.get('isPrivate') === 'true';
 
         if (!title || !content) {
             return NextResponse.json(
@@ -33,7 +34,8 @@ export async function POST(request) {
             content: processedContent,
             excerpt: content.slice(0, 100),
             createdAt: new Date(),
-            authorId: session.userId
+            authorId: session.userId,
+            isPrivate,
         };
 
         const result = await createBlog(blogData);

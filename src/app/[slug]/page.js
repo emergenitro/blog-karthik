@@ -1,6 +1,7 @@
 import { getBlogs, getBlogBySlug } from '@/lib/blog';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import hljs from 'highlight.js';
 
 export const revalidate = 60; // Revalidate every 60 seconds
 
@@ -43,8 +44,22 @@ export async function generateMetadata({ params }) {
     };
 }
 
+function parseCodeBlocks(text) {
+    return text.replace(/```(\w+)?\n([\s\S]*?)```/g, (_, lang, code) => {
+        const trimmed = code.trimEnd();
+        const highlighted = lang && hljs.getLanguage(lang)
+            ? hljs.highlight(trimmed, { language: lang }).value
+            : hljs.highlightAuto(trimmed).value;
+        return `<pre class="hljs-pre"><code class="hljs">${highlighted}</code></pre>`;
+    });
+}
+
 function parseLinks(text) {
     return text.replace(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
+}
+
+function processContent(text) {
+    return parseLinks(parseCodeBlocks(text));
 }
 
 export default async function BlogPage({ params }) {
@@ -78,7 +93,7 @@ export default async function BlogPage({ params }) {
 
                 <div
                     className="blog-content prose prose-invert max-w-none leading-relaxed text-gray-300 whitespace-pre-wrap"
-                    dangerouslySetInnerHTML={{ __html: parseLinks(blog.content) }}
+                    dangerouslySetInnerHTML={{ __html: processContent(blog.content) }}
                 />
             </article>
         </div>

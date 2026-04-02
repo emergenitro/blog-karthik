@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 
 export default function CreateBlogPage() {
     const [content, setContent] = useState('');
+    const [isPrivate, setIsPrivate] = useState(false);
     const textareaRef = useRef(null);
     const router = useRouter();
 
@@ -163,6 +164,8 @@ export default function CreateBlogPage() {
         e.preventDefault();
         const formData = new FormData(e.target);
 
+        formData.append('isPrivate', String(isPrivate));
+
         try {
             const response = await fetch('/api/blog/create', {
                 method: 'POST',
@@ -213,6 +216,17 @@ export default function CreateBlogPage() {
                             className="w-full bg-transparent border border-gray-800 focus:border-gray-600 outline-none p-4 transition-all duration-300 resize-none"
                             placeholder="write your thoughts..."
                         ></textarea>
+                    </div>
+
+                    <div className="flex items-center justify-center gap-3">
+                        <button
+                            type="button"
+                            onClick={() => setIsPrivate(!isPrivate)}
+                            className={`relative w-10 h-5 rounded-full transition-colors duration-300 ${isPrivate ? 'bg-gray-400' : 'bg-gray-700'}`}
+                        >
+                            <span className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white transition-transform duration-300 ${isPrivate ? 'translate-x-5' : 'translate-x-0'}`} />
+                        </button>
+                        <span className="text-sm text-gray-400">{isPrivate ? 'enlisted (private)' : 'public'}</span>
                     </div>
 
                     <div className="flex justify-center pt-8">

@@ -8,6 +8,7 @@ export async function POST(request) {
         const id = formData.get('id');
         const title = formData.get('title');
         const content = formData.get('content');
+        const isPrivate = formData.get('isPrivate') === 'true';
 
         if (!id || !title || !content) {
             return NextResponse.json(
@@ -33,7 +34,8 @@ export async function POST(request) {
             title,
             content: processedContent,
             excerpt: content.slice(0, 100),
-            updatedAt: new Date()
+            updatedAt: new Date(),
+            isPrivate,
         };
 
         await updateBlog(id, blogData);

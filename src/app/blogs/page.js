@@ -1,4 +1,4 @@
-import { getBlogs } from '@/lib/blog';
+import { getPublicBlogs } from '@/lib/blog';
 import Link from 'next/link';
 import BlogsClientWrapper from './BlogsClientWrapper';
 
@@ -10,7 +10,7 @@ export const metadata = {
 };
 
 export default async function BlogsPage() {
-    const blogs = await getBlogs();
+    const blogs = await getPublicBlogs();
 
     return (
         <BlogsClientWrapper>

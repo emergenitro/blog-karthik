@@ -1,6 +1,24 @@
 import { ObjectId } from 'mongodb';
 import clientPromise from './mongo';
 
+export async function getPublicBlogs() {
+    try {
+        const client = await clientPromise;
+        const db = client.db('portfolio-blog-db');
+        const blogsCollection = db.collection('blogs');
+        const blogs = await blogsCollection.find({ isPrivate: { $ne: true } }).sort({ createdAt: -1 }).toArray();
+
+        return blogs.map(blog => ({
+            ...blog,
+            _id: blog._id.toString(),
+            createdAt: blog.createdAt.toISOString(),
+        }));
+    } catch (error) {
+        console.error('Error fetching blogs:', error);
+        throw new Error('Failed to fetch blogs');
+    }
+}
+
 export async function getBlogs() {
     try {
         const client = await clientPromise;

@@ -50,8 +50,11 @@ export default function AdminPage() {
                             className="py-6 border-b border-gray-800 hover:border-gray-600 transition-all duration-300"
                         >
                             <div className="flex items-baseline justify-between gap-4">
-                                <h2 className="text-2xl font-semibold">
+                                <h2 className="text-2xl font-semibold flex items-center gap-3">
                                     {blog.title}
+                                    {blog.isPrivate && (
+                                        <span className="text-xs text-gray-500 border border-gray-700 px-2 py-0.5 rounded">enlisted</span>
+                                    )}
                                 </h2>
                                 <time className="text-sm text-gray-500 whitespace-nowrap">
                                     {new Date(blog.createdAt).toLocaleDateString('en-US', {

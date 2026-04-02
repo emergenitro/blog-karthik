@@ -5,6 +5,7 @@ import { useRouter, useParams } from 'next/navigation';
 export default function EditBlogPage() {
     const [content, setContent] = useState('');
     const [title, setTitle] = useState('');
+    const [isPrivate, setIsPrivate] = useState(false);
     const [loading, setLoading] = useState(true);
     const textareaRef = useRef(null);
     const router = useRouter();
@@ -18,6 +19,7 @@ export default function EditBlogPage() {
                 const data = await response.json();
                 if (data.success) {
                     setTitle(data.blog.title);
+                    setIsPrivate(data.blog.isPrivate === true);
                     setContent(data.blog.content.replace(
                         /<span class="tooltip-wrapper"><span class="tooltip-text">([^<]+)<\/span><span class="tooltip-content">([^<]+)<\/span><\/span>/g,
                         '{$1|$2}'
@@ -193,6 +195,7 @@ export default function EditBlogPage() {
         formData.append('id', blogId);
         formData.append('title', title);
         formData.append('content', content);
+        formData.append('isPrivate', String(isPrivate));
 
         try {
             const response = await fetch('/api/blog/edit', {
@@ -254,6 +257,17 @@ export default function EditBlogPage() {
                             className="w-full bg-transparent border border-gray-800 focus:border-gray-600 outline-none p-4 transition-all duration-300 resize-none"
                             placeholder="write your thoughts..."
                         ></textarea>
+                    </div>
+
+                    <div className="flex items-center justify-center gap-3">
+                        <button
+                            type="button"
+                            onClick={() => setIsPrivate(!isPrivate)}
+                            className={`relative w-10 h-5 rounded-full transition-colors duration-300 ${isPrivate ? 'bg-gray-400' : 'bg-gray-700'}`}
+                        >
+                            <span className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white transition-transform duration-300 ${isPrivate ? 'translate-x-5' : 'translate-x-0'}`} />
+                        </button>
+                        <span className="text-sm text-gray-400">{isPrivate ? 'enlisted (private)' : 'public'}</span>
                     </div>
 
                     <div className="flex justify-center pt-8">
