@@ -69,7 +69,7 @@ export default function AdminPage() {
                             )}
                             <div className="mt-4 flex gap-4 text-sm">
                                 <Link
-                                    href={`/blogs/${blog.slug}`}
+                                    href={`/${blog.slug}`}
                                     className="text-gray-300 hover:text-white transition-colors duration-300"
                                 >
                                     view
