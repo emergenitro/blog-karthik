@@ -53,7 +53,7 @@ export default function AdminPage() {
                                 <h2 className="text-2xl font-semibold flex items-center gap-3">
                                     {blog.title}
                                     {blog.isPrivate && (
-                                        <span className="text-xs text-gray-500 border border-gray-700 px-2 py-0.5 rounded">enlisted</span>
+                                        <span className="text-xs text-gray-500 border border-gray-700 px-2 py-0.5 rounded">unlisted</span>
                                     )}
                                 </h2>
                                 <time className="text-sm text-gray-500 whitespace-nowrap">

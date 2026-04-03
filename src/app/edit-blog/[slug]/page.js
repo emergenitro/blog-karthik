@@ -267,7 +267,7 @@ export default function EditBlogPage() {
                         >
                             <span className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white transition-transform duration-300 ${isPrivate ? 'translate-x-5' : 'translate-x-0'}`} />
                         </button>
-                        <span className="text-sm text-gray-400">{isPrivate ? 'enlisted (private)' : 'public'}</span>
+                        <span className="text-sm text-gray-400">{isPrivate ? 'unlisted (private)' : 'public'}</span>
                     </div>
 
                     <div className="flex justify-center pt-8">
