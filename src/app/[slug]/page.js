@@ -93,13 +93,17 @@ export default async function BlogPage({ params }) {
 
                 <header className="mb-12 pb-8 border-b border-gray-800">
                     <h1 className="text-4xl font-bold mb-4">{blog.title}</h1>
-                    <time className="text-sm text-gray-500">
-                        {new Date(blog.createdAt).toLocaleDateString('en-US', {
-                            year: 'numeric',
-                            month: 'long',
-                            day: 'numeric'
-                        })}
-                    </time>
+                    <div className="flex items-center gap-3 text-sm text-gray-500">
+                        <time>
+                            {new Date(blog.createdAt).toLocaleDateString('en-US', {
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric'
+                            })}
+                        </time>
+                        <span>·</span>
+                        <span>{Math.max(1, Math.round(blog.content.trim().split(/\s+/).length / 200))} min read</span>
+                    </div>
                 </header>
 
                 <div
